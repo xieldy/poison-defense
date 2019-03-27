@@ -1,0 +1,5 @@
+python3 poison.py
+dataset: ../datasets/house-processed.csv
+logdir: ../results
+logind: 0
+model: linreg
