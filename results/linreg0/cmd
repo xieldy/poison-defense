@@ -1,5 +1,12 @@
-python3 poison.py
+python3 poison.py -vis
 dataset: ../datasets/house-processed.csv
 logdir: ../results
 logind: 0
 model: linreg
+visualize: True
+trainct: 300
+testct: 500
+validct: 250
+poisct: 75
+partct: 4
+seed: None
