@@ -34,7 +34,7 @@ def setup_argparse():
                             help='number of increments to poison with') 
 
     # seed for randmization
-    parser.add_argument('-seed',type=int,help='random seed')
+    parser.add_argument('-seed',default=123,type=int,help='random seed')
 
     #init strategy 
     parser.add_argument('-init','--initialization',default='inflip',
