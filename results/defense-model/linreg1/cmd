@@ -1,0 +1,24 @@
+python3 poison.py -m linreg -dfs -init randflip -obj 0 -s 4 -seed 1234 -opty -li 1
+dataset: ../datasets/house-processed.csv
+logdir: ../results
+logind: 1
+model: linreg
+visualize: False
+trainct: 400
+testct: 400
+validct: 400
+poisct: 100
+partct: 4
+seed: 1234
+initialization: randflip
+numinit: 1
+lambd: 1
+epsilon: 0.001
+eta: 0.01
+beta: 0.05
+sigma: 0.9
+multiproc: False
+objective: 0
+optimizey: True
+rounding: False
+defense: True

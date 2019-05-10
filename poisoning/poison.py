@@ -9,6 +9,10 @@ import numpy.linalg as la
 from gd_poisoners import *
 from inits import *
 
+
+def roundpois(poisx,poisy):
+	return np.around(poisx),[0 if val<0.5 else 1 for val in poisy]
+
 #open these files and log the args(including defult args)
 def open_logging_files(logdir,modeltype,logind,args):
 	myname = str(modeltype)+str(logind)
@@ -88,6 +92,40 @@ def sample_dataset(x, y, trnct, poisct, tstct, vldct, seed):
 	#make up the data set with the sample list
 
 	return trnx, trny, tstx, tsty, poisx, poisy, vldx, vldy
+
+def trimclf(x,y,count,lam,model):
+	length = x.shape[0]
+	width = x.shape[1]
+	y = np.array(y)
+	inds = sorted(np.random.permutation(length))[:count]
+	initinds = inds[:]
+	clf = None
+
+	newinds = []
+	it = 0
+	toterr = 10000
+	lasterr = 20000
+	clf,_ = model.learn_model(x,y,None)
+
+	while(sorted(inds)!=sorted(newinds) and it<400 and lasterr-toterr>1e-5):
+		newinds = inds[:]
+		lasterr = toterr
+		subx = x[inds]
+		suby = y[inds]
+		clf.fit(subx,suby)
+		preds = clf.predict(x)-y
+		residvec = np.square(preds)
+
+		residtopns = sorted([(residvec[i],i) for i in range(length)])[:count]
+		resid = [val[1] for val in residtopns]
+		topnresid = [val[0] for val in residtopns]
+
+		# set inds to indices of n largest values in error
+		inds = sorted(resid)
+		# recompute error
+		toterr = sum(topnresid)
+		it+=1
+	return clf,lam,inds
 
 
 def main(args):
@@ -204,7 +242,29 @@ def main(args):
 		os.fsync(trainfile.fileno())
    
 	trainfile.close()
-	testfile.close()
+
+	if args.defense:
+		#print('the poisoned x and y are:',poisedx,poisedy)
+		clfd,lam,inds = trimclf(poisedx,poisedy,args.trainct,None,poiser)
+		errdfs = poiser.computeError(clfd)
+
+	resfile.write('-----------------'+"\n")
+	resfile.write('Unpoisoned:'+"\n")
+	resfile.write("Validation MSE:"+str(errgrd[0])+'\n')
+	resfile.write("Test MSE:"+str(errgrd[1])+'\n')
+	resfile.write('-----------------'+"\n")
+	resfile.write('Poisoned:'+"\n")
+	resfile.write("Validation MSE:"+str(err[0])+'\n')
+	resfile.write("Test MSE:"+str(err[1])+'\n')
+	resfile.write('-----------------'+"\n")
+	resfile.write('Defensed:'+"\n")
+	resfile.write("Validation MSE:"+str(errdfs[0])+'\n')
+	resfile.write("Test MSE:"+str(errdfs[1])+'\n')
+	resfile.write('-----------------'+"\n")
+
+	resfile.flush()
+	os.fsync(resfile.fileno())
+	resfile.close()
 
 	print('-----------------')
 	print("Unpoisoned:")
@@ -215,12 +275,19 @@ def main(args):
 	print("Validation MSE:",err[0])
 	print("Test MSE:",err[1])
 	print('-----------------')
+	print('Defensed:')
+	print("Validation MSE:",errdfs[0])
+	print("Test MSE:",errdfs[1])
+	print('-----------------')
 	if args.rounding:
 		print('-----------------')
 		print("Rounded:")
 		print("Validation MSE",rounderr[0])
 		print("Test MSE:", rounderr[1])
 		print('-----------------')
+
+	
+
 
 	print('end!')
 

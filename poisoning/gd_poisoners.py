@@ -12,9 +12,9 @@ import os
 import datetime
 
 # visualization
-import matplotlib  
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
+#import matplotlib  
+#matplotlib.use('TkAgg')
+#import matplotlib.pyplot as plt
 
 # sklearn imports
 from sklearn import linear_model
@@ -569,8 +569,11 @@ class GDPoisoner(object):
             lastyc = curyc
             w_1 = w_2
             k += 1
-    
+        
+        
         for col in self.colmap:
+            #print('------------col=',col)
+            #print('!!!!!!!!',[(curpoisxelem[0,j], j) for j in self.colmap[col]])
             vals = [(curpoisxelem[0,j], j) for j in self.colmap[col]]
             topval, topcol = max(vals)
             for j in self.colmap[col]:
@@ -607,7 +610,7 @@ class GDPoisoner(object):
 
     # can compute l2 objective and grads already
     def comp_obj_new(self, clf, lam, otherargs):
-        coef_diff = np.linalg.norm(clf.coef_ - self.initclf.coef)
+        coef_diff = np.linalg.norm(clf.coef_ - self.initclf.coef_)
         inter_diff = clf.intercept_ - self.initclf.intercept_
         return coef_diff**2 + inter_diff**2
 

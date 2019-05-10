@@ -5,7 +5,7 @@ def setup_argparse():
     parser = argparse.ArgumentParser(description='handle script inputs')
 
     # dataset file
-    parser.add_argument("-d", "--dataset",default='../datasets/house-processed.csv',\
+    parser.add_argument("-dt", "--dataset",default='../datasets/house-processed.csv',\
                             help='dataset filename (includes path)')
 
     parser.add_argument("-ld", "--logdir",default="../results",\
@@ -22,13 +22,13 @@ def setup_argparse():
     parser.add_argument("-vis",'--visualize',action='store_true',help="visualize dataset")
 
     # counts
-    parser.add_argument("-r", "--trainct",default=300, type=int,\
+    parser.add_argument("-r", "--trainct",default=400, type=int,\
                             help='number of points to train models with')
-    parser.add_argument("-t", "--testct",default=500, type=int,\
+    parser.add_argument("-t", "--testct",default=400, type=int,\
                             help = 'number of points to test models on')
-    parser.add_argument("-v","--validct",default=250, type=int,\
+    parser.add_argument("-v","--validct",default=400, type=int,\
                             help='size of validation set')
-    parser.add_argument("-p", "--poisct",default=75, type=int,\
+    parser.add_argument("-p", "--poisct",default=100, type=int,\
                             help='number of poisoning points')
     parser.add_argument("-s", "--partct",default=4, type=int,\
                             help='number of increments to poison with') 
@@ -52,17 +52,20 @@ def setup_argparse():
     parser.add_argument("-i", "--sigma",default=0.9, type=float,help='line search termination lowercase sigma;icml 2015')
 
     # enable multi processing
-    parser.add_argument("-mp","--multiproc",action='store_true',\
+    parser.add_argument("-mp","--multiproc",action='store_true',default=False,\
                             help='enable to allow for multiprocessing support')
 
     # objective
     parser.add_argument("-obj","--objective",default=0,type=int,
                             help="objective to use (0 for train, 1 for validation, 2 for norm difference)")
-    parser.add_argument('-opty','--optimizey',action='store_true',
+    parser.add_argument('-opty','--optimizey',action='store_true',default=False,
                             help='optimize the y values of poisoning as well')
 
     # round 
-    parser.add_argument("-rnd",'--rounding',action='store_true',help='to round or not to round')
+    parser.add_argument("-rnd",'--rounding',action='store_true',default=False,help='to round or not to round')
+
+    # defense
+    parser.add_argument("-dfs",'--defense',action='store_true',default=False,help='to defense or not to defense')
 
 
     return parser
